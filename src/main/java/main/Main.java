@@ -2,12 +2,12 @@ package main;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.pdfbox.preflight.Format;
-import org.apache.pdfbox.preflight.parser.PreflightParser;
+
+import main.loaders.PDFBoxLoader;
+import main.loaders.TikaLoader;
 
 public class Main {
 
@@ -17,11 +17,11 @@ public class Main {
 		System.out.println("end");
 	}
 	
-	private static void parseTika(String fileName) {
+	private static void parseTika(String fileName) throws Exception {
 		parseDocument(fileName, true);
 	}
 
-	private static void parsePBox(String fileName) {
+	private static void parsePBox(String fileName) throws Exception {
 		parseDocument(fileName, false);
 	}
 	
@@ -34,26 +34,12 @@ public class Main {
 		System.out.println(Files.probeContentType(originalFile.toPath()));
 	}
 	
-	private static void parseDocument(String fileName, boolean tika) {
-		long start = System.currentTimeMillis();
-		try {
-			
-			File file = new File(fileName);
-
-			System.out.println("File size " + getFileSizeMegaBytes(file));
-			
-			PreflightParser parser = new PreflightParser(file);
-	
-			parser.parse(Format.PDF_A1A);
-	
-			parser.getPreflightDocument().validate();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			long end = System.currentTimeMillis();
-			System.out.println("Computed in " + BigDecimal.valueOf(end - start).divide(BigDecimal.valueOf(1000l)).toString() + " seconds");
+	private static void parseDocument(String fileName, boolean tika) throws Exception {
+		File file = new File(fileName);
+		if (tika) {
+			TikaLoader.load(file);
+		} else {
+			PDFBoxLoader.load(file);
 		}
 	}
 	
