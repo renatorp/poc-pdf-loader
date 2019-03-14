@@ -2,6 +2,7 @@ package main;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
@@ -12,8 +13,8 @@ import main.loaders.TikaLoader;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		parsePBox("/home/renatorp/Documents/Materiais/TI/Livros e apostilas/Livro Programação em Shell Linux 8 edição - Julio Cezar Neves.pdf");
-		parsePBox("/home/renatorp/Documents/Materiais/BONS LIVROS FAZEM GRANDES LIDERES/O LIVRO DE OURO DA LIDERANÇA - John C. Maxwell.pdf");
+		parsePBox("/home/renato/Downloads/big.pdf");
+		parsePBox("/home/renato/Downloads/big.pdf");
 		System.out.println("end");
 	}
 	
@@ -35,11 +36,20 @@ public class Main {
 	}
 	
 	private static void parseDocument(String fileName, boolean tika) throws Exception {
-		File file = new File(fileName);
-		if (tika) {
-			TikaLoader.load(file);
-		} else {
-			PDFBoxLoader.load(file);
+		long start = System.currentTimeMillis();
+		try {
+			File file = new File(fileName);
+			if (tika) {
+				TikaLoader.load(file);
+			} else {
+				PDFBoxLoader.load(file);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			long end = System.currentTimeMillis();
+			System.out.println("Computed in " + BigDecimal.valueOf(end - start).divide(BigDecimal.valueOf(1000l)).toString() + " seconds");
 		}
 	}
 	
